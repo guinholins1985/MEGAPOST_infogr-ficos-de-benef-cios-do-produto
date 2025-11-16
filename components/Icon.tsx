@@ -33,9 +33,11 @@ const ICONS: Record<IconName, React.FC<React.SVGProps<SVGSVGElement>>> = {
     </svg>
   ),
   Rocket: (props) => (
-      <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
+    <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 13a8 8 0 017 7 6 6 0 003-5 9 9 0 006-8 3 3 0 00-3-3 9 9 0 00-8 6 6 6 0 00-5 3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 14a6 6 0 00-3 6 6 6 0 006-3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 9a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
   ),
   AcademicCap: (props) => (
     <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -64,7 +66,7 @@ const ICONS: Record<IconName, React.FC<React.SVGProps<SVGSVGElement>>> = {
   ),
   Beaker: (props) => (
     <svg {...props} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 10.75c-.25.41-.5.81-.75 1.25M14.25 10.75c.25.41.5.81.75 1.25M14.25 10.75h4.5M14.25 10.75l-4.5 4.5M14.25 10.75l4.5 4.5M4.5 10.75l4.5-4.5M4.5 10.75l4.5 4.5M4.5 10.75h4.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 5.25a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v3.375c0 .621.504 1.125 1.125 1.125h2.25a.75.75 0 01.75.75v3.375c0 .621-.504 1.125-1.125 1.125h-2.25a.75.75 0 01-.75-.75V11.25h-3v3.375c0 .621-.504 1.125-1.125 1.125H6.375a.75.75 0 01-.75-.75V11.25a.75.75 0 01.75-.75h2.25c.621 0 1.125-.504 1.125-1.125V5.25z" />
     </svg>
   ),
   Download: (props) => (

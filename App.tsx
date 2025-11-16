@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef } from 'react';
 import { generateInfographicFromUrl } from './services/geminiService';
 import { InfographicData, Benefit, IconName } from './types';
@@ -74,6 +75,7 @@ const InfographicDisplay: React.FC<{ data: InfographicData | null, isLoading: bo
   const infographicRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isCopying, setIsCopying] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 2));
@@ -90,6 +92,7 @@ const InfographicDisplay: React.FC<{ data: InfographicData | null, isLoading: bo
         link.click();
     } catch (error) {
         console.error("Failed to download infographic:", error);
+        alert("Falha ao baixar o infográfico.");
     } finally {
         setIsDownloading(false);
     }
@@ -100,21 +103,28 @@ const InfographicDisplay: React.FC<{ data: InfographicData | null, isLoading: bo
         alert('A cópia da imagem não é suportada neste navegador.');
         return;
     }
+    if (isCopying || hasCopied) return;
+
     setIsCopying(true);
     try {
         const canvas = await html2canvas(infographicRef.current, { scale: 2, backgroundColor: null });
-        canvas.toBlob(async (blob) => {
-            if (blob) {
-                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            }
-        }, 'image/png');
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+        
+        if (!blob) {
+            throw new Error('Não foi possível criar a imagem para cópia.');
+        }
+
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        setHasCopied(true);
+        setTimeout(() => setHasCopied(false), 2000);
     } catch (error) {
-        console.error("Failed to copy image:", error);
+        console.error("Falha ao copiar imagem:", error);
+        const message = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        alert(`Falha ao copiar imagem: ${message}`);
     } finally {
-        setTimeout(() => setIsCopying(false), 2000);
+        setIsCopying(false);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -164,7 +174,7 @@ const InfographicDisplay: React.FC<{ data: InfographicData | null, isLoading: bo
   return (
     <div className="relative">
       <div className="absolute top-4 right-4 z-10 flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 p-2 rounded-full shadow-lg">
-        <ActionButton onClick={handleCopy} icon="DocumentDuplicate" label={isCopying ? "Copiado!" : "Copiar Imagem"} disabled={isCopying} text={isCopying ? "✓" : undefined} />
+        <ActionButton onClick={handleCopy} icon="DocumentDuplicate" label={hasCopied ? "Copiado!" : "Copiar Imagem"} disabled={isCopying || hasCopied} text={hasCopied ? "✓" : (isCopying ? '...' : undefined)} />
         <ActionButton onClick={handleDownload} icon="Download" label="Baixar PNG" disabled={isDownloading} />
         <ActionButton onClick={handleZoomIn} icon="ZoomIn" label="Aumentar Zoom" disabled={zoomLevel >= 2} />
         <ActionButton onClick={handleZoomOut} icon="ZoomOut" label="Diminuir Zoom" disabled={zoomLevel <= 0.5} />
