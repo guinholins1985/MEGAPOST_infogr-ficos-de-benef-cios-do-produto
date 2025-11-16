@@ -3,7 +3,8 @@ import React, { useState, useCallback, useRef } from 'react';
 import { generateInfographicFromUrl } from './services/geminiService';
 import { InfographicData, Benefit, IconName } from './types';
 import Icon from './components/Icon';
-import LoadingSpinner from './components/LoadingSpinner';
+import InfographicSkeleton from './components/InfographicSkeleton';
+import { useTheme } from './hooks/useTheme';
 
 declare const html2canvas: any;
 
@@ -127,13 +128,7 @@ const InfographicDisplay: React.FC<{ data: InfographicData | null, isLoading: bo
   };
 
   if (isLoading) {
-    return (
-        <div className="w-full h-full flex flex-col justify-center items-center text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-            <LoadingSpinner />
-            <p className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300">Analisando a URL e gerando seu infográfico...</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">A IA está criando algo incrível!</p>
-        </div>
-    );
+    return <InfographicSkeleton />;
   }
   
   if (!data) {
@@ -232,6 +227,7 @@ function App() {
   const [infographicData, setInfographicData] = useState<InfographicData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [theme, toggleTheme] = useTheme();
 
   const handleGenerate = useCallback(async ({ marketplaceUrl, imageUrl }: { marketplaceUrl: string; imageUrl: string; }) => {
     if (!marketplaceUrl) {
@@ -254,13 +250,30 @@ function App() {
 
   return (
     <div className="min-h-screen text-gray-900 dark:text-gray-100 p-4 sm:p-6 lg:p-8">
-      <header className="text-center mb-10">
+      <header className="text-center mb-10 relative">
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
           Gerador de Infográficos com IA
         </h1>
         <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
           Cole a URL de um produto e deixe a IA criar um infográfico de benefícios impressionante.
         </p>
+        <div className="absolute top-0 right-0">
+          <button
+            onClick={toggleTheme}
+            aria-label={`Mudar para modo ${theme === 'light' ? 'escuro' : 'claro'}`}
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            {theme === 'light' ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707.707M6.343 6.343l-.707.707m12.728 0l-.707-.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            )}
+          </button>
+        </div>
       </header>
       
       <main className="max-w-7xl mx-auto">
